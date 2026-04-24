@@ -65,7 +65,7 @@ serve(async (req) => {
     }
 
     const appUrl = redirect_url || Deno.env.get('APP_URL') || '';
-    const redirectTo = appUrl ? `${appUrl.replace(/\/$/, '')}/admin/reset-password` : undefined;
+    const redirectTo = appUrl ? `${appUrl.replace(/\/$/, '')}/admin/accept-invite` : undefined;
 
     const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
       email.trim(),
@@ -86,14 +86,8 @@ serve(async (req) => {
     }
 
     if (inviteData.user) {
-      // ✅ CONFIRMER L'EMAIL AUTOMATIQUEMENT pour permettre la reconnexion
-      const { error: confirmError } = await supabaseAdmin.auth.admin.updateUserById(
-        inviteData.user.id,
-        { email_confirm: true }
-      );
-      if (confirmError) {
-        console.error('Erreur confirmation email:', confirmError);
-      }
+      // ✅ NE PAS appeler email_confirm: true ici — le lien d'invitation s'en charge !
+      // email_confirm: true invaliderait le token d'invitation
 
       const { error: profileError } = await supabaseAdmin
         .from('profiles')
