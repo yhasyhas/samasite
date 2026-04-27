@@ -3,6 +3,7 @@ import { Save, Globe, Phone, Mail, MapPin, DollarSign, Image, AlertTriangle } fr
 import { useTheme } from '../../contexts/ThemeContext';
 import { updateSettings } from '../../services/settings';
 import { logActivity } from '../../services/activityLogs';
+import { SingleImageUploader } from '../../components/ui/ImageUploader';
 import type { SiteSettings } from '../../types';
 import { toast } from 'sonner';
 
@@ -117,13 +118,11 @@ export function GeneralSettingsPage() {
             <Image size={15} className="text-slate-500" />
             Médias
           </h2>
-          <Field label="Logo URL" icon={Image}>
-            <input
-              type="url"
+          <Field label="Logo" icon={Image}>
+            <SingleImageUploader
               value={form.logo_url || ''}
-              onChange={(e) => setForm({ ...form, logo_url: e.target.value })}
-              placeholder="https://example.com/logo.png"
-              className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              onChange={(url) => setForm({ ...form, logo_url: url })}
+              folder="logos"
             />
             {form.logo_url && (
               <div className="mt-2 w-24 h-12 rounded-lg bg-slate-100 overflow-hidden flex items-center justify-center border border-slate-200">
@@ -131,13 +130,11 @@ export function GeneralSettingsPage() {
               </div>
             )}
           </Field>
-          <Field label="Favicon URL">
-            <input
-              type="url"
+          <Field label="Favicon">
+            <SingleImageUploader
               value={form.favicon_url || ''}
-              onChange={(e) => setForm({ ...form, favicon_url: e.target.value })}
-              placeholder="https://example.com/favicon.ico"
-              className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+              onChange={(url) => setForm({ ...form, favicon_url: url })}
+              folder="logos"
             />
           </Field>
         </section>

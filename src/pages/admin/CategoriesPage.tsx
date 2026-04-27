@@ -5,6 +5,7 @@ import { logActivity } from '../../services/activityLogs';
 import { slugify } from '../../lib/utils';
 import { Modal } from '../../components/ui/Modal';
 import { Skeleton } from '../../components/ui/Skeleton';
+import { SingleImageUploader } from '../../components/ui/ImageUploader';
 import type { Category } from '../../types';
 import { toast } from 'sonner';
 
@@ -165,9 +166,12 @@ export function CategoriesPage() {
               className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 resize-none" />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700 block mb-1">Image URL</label>
-            <input type="url" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-              className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2" />
+            <label className="text-sm font-medium text-slate-700 block mb-1">Image</label>
+            <SingleImageUploader
+              value={form.image_url || ''}
+              onChange={(url) => setForm({ ...form, image_url: url })}
+              folder="categories"
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
