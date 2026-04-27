@@ -29,6 +29,9 @@ export interface SiteSettings {
   dark_text_primary: string;
   dark_text_secondary: string;
   dark_border: string;
+  hero_mode: 'color' | 'image';
+  hero_image_url: string;
+  hero_overlay_opacity: number;
   updated_at: string;
   updated_by: string | null;
 }
