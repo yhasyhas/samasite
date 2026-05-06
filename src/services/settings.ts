@@ -25,7 +25,7 @@ export async function updateSettings(newSettings: Partial<SiteSettings>) {
 
   // 2. S'il y a plusieurs lignes, on supprime les vieilles (garde la plus récente)
   if (allRows && allRows.length > 1) {
-    const keepId = allRows[0].id;
+    //const keepId = allRows[0].id;
     const idsToDelete = allRows.slice(1).map(r => r.id);
     
     await supabase
