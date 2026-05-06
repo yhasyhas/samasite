@@ -3,20 +3,20 @@ import type { QuoteRequest } from '../types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-/* ============================================================
-   SOUMISSION PUBLIQUE (fetch direct, pas de token auth)
-   ============================================================ */
-
 export async function submitQuoteRequest(quote: Partial<QuoteRequest>) {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/quote_requests?select=*`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SUPABASE_ANON_KEY,
-      'Prefer': 'return=representation',
-    },
-    body: JSON.stringify(quote),
-  });
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/quote_requests?select=*`,
+    {
+      method: 'POST',
+      credentials: 'omit', // ⛔ Bloque TOUT cookie/token
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Prefer': 'return=representation',
+      },
+      body: JSON.stringify(quote),
+    }
+  );
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -31,10 +31,7 @@ export async function submitQuoteRequest(quote: Partial<QuoteRequest>) {
   return { data: data[0] as QuoteRequest, error: null };
 }
 
-/* ============================================================
-   ADMIN (utilise supabase normal avec auth)
-   ============================================================ */
-
+// --- Admin functions (gardent supabase normal) ---
 export async function getQuotes(filters?: {
   status?: string;
   search?: string;
