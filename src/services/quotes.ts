@@ -1,46 +1,30 @@
+import { supabase } from '../lib/supabase';
 import type { QuoteRequest } from '../types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-
 export async function submitQuoteRequest(quote: Partial<QuoteRequest>) {
-  const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/quote_requests?select=*`,
-    {
-      method: 'POST',
-      credentials: 'omit',           // ⛔ Bloque les cookies de session
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, // ✅ CLE MANQUANTE !
-        'Prefer': 'return=representation',
-      },
-      body: JSON.stringify(quote),
-    }
-  );
+  const { data, error } = await supabase.functions.invoke('submit-quote', {
+    body: quote,
+  });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('[submitQuoteRequest] HTTP', response.status, errorText);
-    return {
-      data: null,
-      error: new Error(`Erreur ${response.status}: ${errorText}`),
-    };
+  if (error) {
+    console.error('[submitQuoteRequest] Erreur:', error);
+    return { data: null, error };
   }
 
-  const data = await response.json();
-  return { data: data[0] as QuoteRequest, error: null };
+  if (data?.error) {
+    return { data: null, error: new Error(data.error) };
+  }
+
+  return { data: data?.data as QuoteRequest, error: null };
 }
 
-// --- Admin functions ---
+// --- Admin functions (inchangées) ---
 export async function getQuotes(filters?: {
   status?: string;
   search?: string;
   limit?: number;
   offset?: number;
 }) {
-  const { supabase } = await import('../lib/supabase');
-
   let query = supabase
     .from('quote_requests')
     .select('*', { count: 'exact' });
@@ -61,8 +45,6 @@ export async function getQuotes(filters?: {
 }
 
 export async function updateQuote(id: string, updates: Partial<QuoteRequest>) {
-  const { supabase } = await import('../lib/supabase');
-
   const { data, error } = await supabase
     .from('quote_requests')
     .update(updates)
