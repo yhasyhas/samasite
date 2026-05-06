@@ -8,10 +8,11 @@ export async function submitQuoteRequest(quote: Partial<QuoteRequest>) {
     `${SUPABASE_URL}/rest/v1/quote_requests?select=*`,
     {
       method: 'POST',
-      credentials: 'omit', // ⛔ Bloque TOUT cookie/token
+      credentials: 'omit',           // ⛔ Bloque les cookies de session
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, // ✅ CLE MANQUANTE !
         'Prefer': 'return=representation',
       },
       body: JSON.stringify(quote),
@@ -31,7 +32,7 @@ export async function submitQuoteRequest(quote: Partial<QuoteRequest>) {
   return { data: data[0] as QuoteRequest, error: null };
 }
 
-// --- Admin functions (gardent supabase normal) ---
+// --- Admin functions ---
 export async function getQuotes(filters?: {
   status?: string;
   search?: string;
