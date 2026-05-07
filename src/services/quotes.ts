@@ -2,20 +2,23 @@ import { supabase } from '../lib/supabase';
 import type { QuoteRequest } from '../types';
 
 export async function submitQuoteRequest(quote: Partial<QuoteRequest>) {
-  const { data, error } = await supabase.functions.invoke('submit-quote', {
-    body: quote,
+  const response = await fetch('/api/submit-quote', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(quote),
   });
 
-  if (error) {
-    console.error('[submitQuoteRequest] Erreur:', error);
-    return { data: null, error };
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    console.error('[submitQuoteRequest] Erreur:', errorData);
+    return {
+      data: null,
+      error: new Error(errorData.error || `Erreur ${response.status}`),
+    };
   }
 
-  if (data?.error) {
-    return { data: null, error: new Error(data.error) };
-  }
-
-  return { data: data?.data as QuoteRequest, error: null };
+  const result = await response.json();
+  return { data: result.data as QuoteRequest, error: null };
 }
 
 // --- Admin functions (inchangées) ---
